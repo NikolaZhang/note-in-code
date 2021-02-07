@@ -6,7 +6,7 @@ export function activate(context: vscode.ExtensionContext) {
 
     console.info('Congratulations, your extension "note-in-code" is now active!');
     new HelloWorld().apply(context);
-    new TemplateCommand().apply(context);
+    new TemplateCommand().init();
 
 }
 

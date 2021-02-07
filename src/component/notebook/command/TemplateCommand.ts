@@ -16,25 +16,24 @@ export class TemplateCommand extends INoteCommand implements IMakeComponent {
         let add = vscode.commands.registerCommand(this.getCmdName("add"), () => {
             this.add();
         });
+        let update = vscode.commands.registerCommand(this.getCmdName("update"), () => {
+            this.update();
+        });
+        let remove = vscode.commands.registerCommand(this.getCmdName("remove"), () => {
+            this.remove();
+        });
+        let query = vscode.commands.registerCommand(this.getCmdName("query"), () => {
+            this.query();
+        });
 
-        context.subscriptions.push(add);
+        context.subscriptions.push(add, update, remove, query);
     }
 
     init() { 
-        let conf = vscode.workspace.getConfiguration("nic");
-        let url = conf.get<string>("url");
-        let uri: Uri;
-        if (url) {
-            try {
-                uri = Uri.parse(url, true);
-            } catch (error) {
-                console.warn('you\'d better config nic.url for template path, she will create it in .vscode if not exist!');
-                conf = vscode.workspace.getConfiguration('niko.json', vscode.workspace.workspaceFolders[0]);
-            }
-        }
-        vscode.workspace.fs.createDirectory(uri);
+        let conf = vscode.workspace.getConfiguration('niko.json', vscode.workspace.workspaceFolders[0]);
+        let fileRoot = vscode.workspace.workspaceFolders[0].uri;
+        vscode.workspace.fs.createDirectory(Uri.joinPath(fileRoot, 'templates'));
     }
-
 
     /**
      * 添加模板
@@ -51,4 +50,9 @@ export class TemplateCommand extends INoteCommand implements IMakeComponent {
             vscode.window.showInformationMessage('请在settings.json中配置nic.url指定模板文件路径');
         }
     }
+
+    // todo zx finish those method
+    update() { }
+    remove() { }
+    query() { }
 }

@@ -2,7 +2,7 @@
 export class INoteCommand {
     
     /** 命令前缀 */
-    readonly PREFIX: string = "note-in-code";
+    readonly prefix: string = "nic";
     category: string;
 
     /**
@@ -14,7 +14,7 @@ export class INoteCommand {
         if (!cmd) { 
             throw new Error("u must give a cmd name");
         }
-        return this.PREFIX + "." + this.category + "." + cmd;
+        return this.prefix + "." + this.category + "." + cmd;
     }
     
 }
