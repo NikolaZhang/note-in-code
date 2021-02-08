@@ -10,19 +10,18 @@
 		"Other"
 	],
 	"activationEvents": [
-		"onCommand:note-in-code.helloWorld",
-		"onCommand:note-in-code.noteHere"
+		"onCommand:nic.template.add"
 	],
 	"main": "./out/extension.js",
 	"contributes": {
 		"commands": [
 			{
-				"command": "note-in-code.helloWorld",
+				"command": "nic.helloWorld",
 				"title": "Hello World"
 			},
 			{
-				"category": "note-in-code.template",
-				"command": "note-in-code.template.add",
+				"category": "nic.template",
+				"command": "nic.template.add",
 				"title": "add template",
 				"icon": "$(zap)",
 				"enablement": "true"
@@ -31,16 +30,15 @@
 		"configuration": {
 			"title": "Nic",
 			"properties": {
-				"nic.url": {
+				"nic.template.path": {
 					"type": "string",
-					"default": "",
-					"description": "template dir"
+					"default": ""
 				}
 			}
 		},
 		"keybindings": [
 			{
-				"command": "note-in-code.noteHere",
+				"command": "nic.helloWorld",
 				"key": "ctrl+alt+i",
 				"when": "editorTextFocus"
 			}
