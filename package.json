@@ -10,7 +10,9 @@
 		"Other"
 	],
 	"activationEvents": [
-		"onCommand:nic.template.add"
+		"onCommand:nic.template.change",
+		"onCommand:nic.template.remove",
+		"onCommand:nic.template.list"
 	],
 	"main": "./out/extension.js",
 	"contributes": {
@@ -21,18 +23,32 @@
 			},
 			{
 				"category": "nic.template",
-				"command": "nic.template.add",
-				"title": "add template",
+				"command": "nic.template.change",
+				"title": "add or update a template",
+				"icon": "$(zap)",
+				"enablement": "true"
+			},
+			{
+				"category": "nic.template",
+				"command": "nic.template.remove",
+				"title": "delete a existed template",
+				"icon": "$(zap)",
+				"enablement": "true"
+			},
+			{
+				"category": "nic.template",
+				"command": "nic.template.list",
+				"title": "list all templates",
 				"icon": "$(zap)",
 				"enablement": "true"
 			}
 		],
 		"configuration": {
-			"title": "Nic",
+			"title": "Nic Templates",
 			"properties": {
-				"nic.template.path": {
-					"type": "string",
-					"default": ""
+				"nic.template": {
+					"type": "array",
+					"default": []
 				}
 			}
 		},
