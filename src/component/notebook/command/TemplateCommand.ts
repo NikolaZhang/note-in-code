@@ -1,7 +1,7 @@
 import { release } from "process";
 import { TextDecoder, TextEncoder } from "util";
 import * as vscode from "vscode";
-import { Uri, WorkspaceConfiguration } from "vscode";
+import { TextDocument, Uri, WorkspaceConfiguration } from "vscode";
 import { format } from "../../../utils/StringUtils";
 import { IMakeComponent } from "../../IMakeComponent";
 import { Template } from "../entity/TemplateEntity";
@@ -13,15 +13,11 @@ import { BaseNoteCommand } from "./BaseNoteCommand";
  * @author: zhangxu
  */
 const NIC_TEMPLATE = "nic.template";
+const SCOPE = true;
 export class TemplateCommand extends BaseNoteCommand implements IMakeComponent {
     category: string = "template";
 
-    template: Template = {
-        key: "cm",
-        description: "this is used for multiple lines",
-        type: "java",
-        value: ["// [nic[]", "//]]"],
-    };
+    template = new Template("cm", "this is used for multiple lines", "java", ["// [nic[", "// ]]"]);
 
     constructor() {
         super();
@@ -66,9 +62,12 @@ export class TemplateCommand extends BaseNoteCommand implements IMakeComponent {
     init() {
         if (!this.check()) {
             // 设置配置
+            console.info("没有发现nic配置, 初始化ing");
+            let templates = [];
+            templates.push(this.template);
             vscode.workspace
                 .getConfiguration()
-                .update(NIC_TEMPLATE, [].push(this.template));
+                .update(NIC_TEMPLATE, templates, SCOPE);
         }
     }
 
@@ -81,30 +80,34 @@ export class TemplateCommand extends BaseNoteCommand implements IMakeComponent {
                 placeHolder: "请填写模板",
                 validateInput: (val) => {
                     try {
-                        return JSON.parse(val);
+                        let template: Template = JSON.parse(val);
+                        return template.check();
                     } catch (error) {
-                        vscode.window.showErrorMessage("模板格式不对啊!");
-                        return;
+                        return "模板格式不对啊~ 需要是json格式的字符串鸭~";
                     }
                 },
             })
             .then((val) => {
+                if (val === undefined) {
+                    return;
+                }
+                console.log("获取:", val);
                 // 将模板追加到文件中
-                let templateConfigs: string = vscode.workspace
+                let templates = vscode.workspace
                     .getConfiguration()
-                    .get<string>(NIC_TEMPLATE);
+                    .get<Array<Template>>(NIC_TEMPLATE);
 
                 // 1. 获取之前的配置和当前配置
-                let templates: Array<Template> = JSON.parse(templateConfigs);
                 let current: Template = JSON.parse(val);
                 // 2. 校验之前的文件中是否不存在当前的key 如果存在当前key, 则直接更新; 否则直接添加当前模板
                 let flag: boolean = false;
-                templates.forEach((item, index) => {
+                templates.every((item, index) => {
                     if (item.key === current.key) {
-                        item = current;
+                        templates[index] = current;
                         flag = true;
-                        return;
+                        return false;
                     }
+                    return true;
                 });
                 if (!flag) {
                     templates.push(current);
@@ -113,8 +116,8 @@ export class TemplateCommand extends BaseNoteCommand implements IMakeComponent {
                 // 3. 将最新的模板配置写入文件
                 vscode.workspace
                     .getConfiguration()
-                    .update(NIC_TEMPLATE, [].push(templates));
-                vscode.window.showErrorMessage("恭喜, 模板配置成功啦~!");
+                    .update(NIC_TEMPLATE, templates, SCOPE);
+                vscode.window.showInformationMessage("恭喜, 模板配置成功啦~!");
             });
     }
     /**
@@ -127,12 +130,11 @@ export class TemplateCommand extends BaseNoteCommand implements IMakeComponent {
             })
             .then((val) => {
                 // 将模板追加到文件中
-                let templateConfigs: string = vscode.workspace
-                    .getConfiguration()
-                    .get<string>(NIC_TEMPLATE);
-
                 // 1. 获取之前的配置
-                let templates: Array<Template> = JSON.parse(templateConfigs);
+                let templates = vscode.workspace
+                    .getConfiguration()
+                    .get<Array<Template>>(NIC_TEMPLATE);
+
                 // 2. 将原来的模板过滤
                 templates = templates.filter((item) => {
                     return item.key !== val;
@@ -141,20 +143,27 @@ export class TemplateCommand extends BaseNoteCommand implements IMakeComponent {
                 // 3. 将最新的模板配置写入文件
                 vscode.workspace
                     .getConfiguration()
-                    .update(NIC_TEMPLATE, [].push(templates));
+                    .update(NIC_TEMPLATE, templates, SCOPE);
                 vscode.window.showErrorMessage("居然不要它了~!");
             });
     }
     list() {
-        let templateConfigs: Array<Template> = vscode.workspace
+        let templates = vscode.workspace
             .getConfiguration()
             .get<Array<Template>>(NIC_TEMPLATE);
-        if (templateConfigs.length === 0) {
+        if (!templates || templates.length === 0) {
             vscode.window.showErrorMessage(
                 "啥也没有啊~ 赶快配置一个... 详见插件介绍[nic.template]"
             );
-        } else { 
-            vscode.window.showQuickPick(templateConfigs.map((item) => item.key));
+        } else {
+            vscode.window
+                .showQuickPick(templates.map((item) => item.key))
+                .then((val) => {
+                    let res = templates.filter((item) => {
+                        return item.key === val;
+                    });
+                    vscode.window.showInformationMessage(JSON.stringify(res[0]));
+                });
         }
     }
 

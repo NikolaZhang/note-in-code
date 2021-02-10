@@ -31,7 +31,8 @@ export abstract class BaseNoteCommand {
      * @returns: 是否存在
      */
     protected check(config: string): boolean {
-        if (vscode.workspace.getConfiguration().get(config)) {
+        let configs = vscode.workspace.getConfiguration().get<Array<any>>(config);
+        if (configs && configs.length !== 0) {
             return true;
         } else {
             return false;
