@@ -2,7 +2,7 @@ import * as vscode from "vscode";
 
 export abstract class BaseNoteCommand {
     /** 命令前缀 */
-    readonly prefix: string = "nic";
+    private readonly prefix: string = "nic";
 
     /**
      * 获取分类
@@ -31,7 +31,9 @@ export abstract class BaseNoteCommand {
      * @returns: 是否存在
      */
     protected check(config: string): boolean {
-        let configs = vscode.workspace.getConfiguration().get<Array<any>>(config);
+        let configs = vscode.workspace
+            .getConfiguration()
+            .get<Array<any>>(config);
         if (configs && configs.length !== 0) {
             return true;
         } else {

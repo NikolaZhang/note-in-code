@@ -2,9 +2,10 @@ import { release } from "process";
 import { TextDecoder, TextEncoder } from "util";
 import * as vscode from "vscode";
 import { TextDocument, Uri, WorkspaceConfiguration } from "vscode";
-import { format } from "../../../utils/StringUtils";
-import { IMakeComponent } from "../../IMakeComponent";
-import { Template } from "../entity/TemplateEntity";
+import { convertJson } from "../../util/ObjectUtils";
+import { format } from "../../util/StringUtils";
+import { IMakeComponent } from "../IMakeComponent";
+import { TemplateEntity } from "../../entity/TemplateEntity";
 import { BaseNoteCommand } from "./BaseNoteCommand";
 
 /**
@@ -15,12 +16,17 @@ import { BaseNoteCommand } from "./BaseNoteCommand";
 const NIC_TEMPLATE = "nic.template";
 const SCOPE = true;
 export class TemplateCommand extends BaseNoteCommand implements IMakeComponent {
-    category: string = "template";
-
-    template = new Template("cm", "this is used for multiple lines", "java", ["// [nic[", "// ]]"]);
+    category: string;
+    template: TemplateEntity;
 
     constructor() {
         super();
+        this.category = "template";
+        this.template = new TemplateEntity();
+        this.template.key = "cm";
+        this.template.description = "this is used for multiple lines";
+        this.template.type = "java";
+        this.template.beginFlag = "// nic";
         this.init();
     }
 
@@ -28,7 +34,7 @@ export class TemplateCommand extends BaseNoteCommand implements IMakeComponent {
         return this.category;
     }
 
-    apply(context: vscode.ExtensionContext): void {
+    public apply(context: vscode.ExtensionContext): void {
         let change = vscode.commands.registerCommand(
             this.getCmdName("change"),
             () => {
@@ -51,7 +57,7 @@ export class TemplateCommand extends BaseNoteCommand implements IMakeComponent {
         context.subscriptions.push(change, remove, list);
     }
 
-    check(): boolean {
+    protected check(): boolean {
         // more check
         return super.check(NIC_TEMPLATE);
     }
@@ -59,7 +65,7 @@ export class TemplateCommand extends BaseNoteCommand implements IMakeComponent {
     /**
      * 初始化模板配置需要的路径和文件
      */
-    init() {
+    private init() {
         if (!this.check()) {
             // 设置配置
             console.info("没有发现nic配置, 初始化ing");
@@ -74,15 +80,22 @@ export class TemplateCommand extends BaseNoteCommand implements IMakeComponent {
     /**
      * 添加key不存在的模板, 修改key已经存在的模板
      */
-    addOrUpdate() {
+    private addOrUpdate() {
         vscode.window
             .showInputBox({
                 placeHolder: "请填写模板",
                 validateInput: (val) => {
                     try {
-                        let template: Template = JSON.parse(val);
-                        return template.check();
+                        if (val) {
+                            let template = new TemplateEntity();
+                            convertJson(val, template);
+                            return template.check();
+                        } else {
+                            return null;
+                        }
                     } catch (error) {
+                        console.error(val);
+                        console.error(error);
                         return "模板格式不对啊~ 需要是json格式的字符串鸭~";
                     }
                 },
@@ -95,10 +108,10 @@ export class TemplateCommand extends BaseNoteCommand implements IMakeComponent {
                 // 将模板追加到文件中
                 let templates = vscode.workspace
                     .getConfiguration()
-                    .get<Array<Template>>(NIC_TEMPLATE);
+                    .get<Array<TemplateEntity>>(NIC_TEMPLATE);
 
                 // 1. 获取之前的配置和当前配置
-                let current: Template = JSON.parse(val);
+                let current = JSON.parse(val);
                 // 2. 校验之前的文件中是否不存在当前的key 如果存在当前key, 则直接更新; 否则直接添加当前模板
                 let flag: boolean = false;
                 templates.every((item, index) => {
@@ -123,7 +136,7 @@ export class TemplateCommand extends BaseNoteCommand implements IMakeComponent {
     /**
      * 删除指定key的模板
      */
-    remove() {
+    private remove() {
         vscode.window
             .showInputBox({
                 placeHolder: "请填写要删除的模板key值",
@@ -133,7 +146,7 @@ export class TemplateCommand extends BaseNoteCommand implements IMakeComponent {
                 // 1. 获取之前的配置
                 let templates = vscode.workspace
                     .getConfiguration()
-                    .get<Array<Template>>(NIC_TEMPLATE);
+                    .get<Array<TemplateEntity>>(NIC_TEMPLATE);
 
                 // 2. 将原来的模板过滤
                 templates = templates.filter((item) => {
@@ -147,10 +160,10 @@ export class TemplateCommand extends BaseNoteCommand implements IMakeComponent {
                 vscode.window.showErrorMessage("居然不要它了~!");
             });
     }
-    list() {
+    private list() {
         let templates = vscode.workspace
             .getConfiguration()
-            .get<Array<Template>>(NIC_TEMPLATE);
+            .get<Array<TemplateEntity>>(NIC_TEMPLATE);
         if (!templates || templates.length === 0) {
             vscode.window.showErrorMessage(
                 "啥也没有啊~ 赶快配置一个... 详见插件介绍[nic.template]"
@@ -162,7 +175,9 @@ export class TemplateCommand extends BaseNoteCommand implements IMakeComponent {
                     let res = templates.filter((item) => {
                         return item.key === val;
                     });
-                    vscode.window.showInformationMessage(JSON.stringify(res[0]));
+                    vscode.window.showInformationMessage(
+                        JSON.stringify(res[0])
+                    );
                 });
         }
     }
@@ -171,3 +186,5 @@ export class TemplateCommand extends BaseNoteCommand implements IMakeComponent {
     // private methods
     // ~ ===================================================================
 }
+
+export { NIC_TEMPLATE };

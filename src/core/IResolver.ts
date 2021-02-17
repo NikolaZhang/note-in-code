@@ -1,0 +1,3 @@
+interface IResolver {
+    doResolve(): any;
+}
