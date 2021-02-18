@@ -57,6 +57,9 @@ class BeginEntity {
     forceScan: boolean;
     /** 相关方法, 注意考虑到方法重载， 我们需要你提供参数即原始方法定义的方法名+参数 */
     methods: Array<string> = [];
+
+    /** 是否展示行号 */
+    lineNumber: boolean = true;
 }
 
-export { TemplateEntity, BeginEntity };
+export { TemplateEntity, BeginEntity, DEFAULT_MAX_SCAN_LINE };

@@ -2,34 +2,39 @@ import { ExtensionContext } from "vscode";
 import * as vscode from "vscode";
 import { IMakeComponent } from "./../IMakeComponent";
 import * as path from "path";
-import { PreviewProperty } from "../../entity/PreviewProperty";
+import { DefaultPreviewPropertyBuilder, PreviewProperty } from "../../entity/PreviewProperty";
 import { BasePreview, IPreview } from "./IPreview";
+import { CodeRegionResolver } from "../../core/CodeRegionResolver";
+import { CodeRegion } from "../../entity/CodeRegion";
 
 class FilePreview extends BasePreview implements IMakeComponent {
-    /** 全局的模板持有者， 每次都需要使用其拼接最新的文本 */
-    viewHtml: string;
-
     apply(context: ExtensionContext): void {
         let nicView = vscode.commands.registerCommand("nic.view", (uri) => {
-            const panel = vscode.window.createWebviewPanel(
-                "nicView",
-                "note in code view",
-                vscode.ViewColumn.One,
-                {
-                    enableScripts: true,
-                    // todo zx 资源加载配置
-                    localResourceRoots: [
-                        vscode.Uri.file(
-                            path.join(context.extensionPath, "media")
-                        ),
-                    ],
-                    // retainContextWhenHidden: true,
-                }
-            );
+            const panel = vscode.window.createWebviewPanel("nicView", "note in code view", vscode.ViewColumn.Two, {
+                enableScripts: true,
+                localResourceRoots: [
+                    vscode.Uri.file(path.join(context.extensionPath, "resources", "css")),
+                    vscode.Uri.file(path.join(context.extensionPath, "resources", "js")),
+                    vscode.Uri.file(path.join(context.extensionPath, "resources", "html")),
+                ],
+                // retainContextWhenHidden: true,
+            });
 
-            // todo zx 获取代码块
+            // 1. 获取所有的codeRegions
+            let codeRegionResolver = new CodeRegionResolver();
+            let codeRegions: Array<CodeRegion> = codeRegionResolver.doResolve();
+
+            // 2. 获取代码封装后样式
             let slot = "";
-            panel.webview.html = this.getWebViewContent(slot);
+            codeRegions.forEach((item, index) => {
+                let prop = DefaultPreviewPropertyBuilder.newInstance(item);
+                slot += this.getCodeStyle(prop);
+            });
+
+            // 3. 设置网页内容
+            let webContent = this.getWebViewContent(context, "resources/html/CodeViewPanel.html", slot);
+            console.log("生成网页内容为: ", webContent);
+            panel.webview.html = webContent;
 
             panel.onDidDispose(
                 () => {
@@ -40,17 +45,6 @@ class FilePreview extends BasePreview implements IMakeComponent {
             );
         });
         context.subscriptions.push(nicView);
-    }
-
-    getCodeRegion(prop: PreviewProperty): string {
-        let codeTemplate = `
-            <pre>
-                <code class="${prop.classes}">
-                    ${prop.codes}
-                </code>
-            </pre>
-        `;
-        return (this.viewHtml ? this.viewHtml : "") + codeTemplate;
     }
 }
 

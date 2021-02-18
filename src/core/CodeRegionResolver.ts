@@ -1,8 +1,5 @@
 import * as vscode from "vscode";
-import {
-    NIC_TEMPLATE,
-    TemplateCommand,
-} from "../component/command/TemplateCommand";
+import { NIC_TEMPLATE, TemplateCommand } from "../component/command/TemplateCommand";
 import { CodeRegion, DefaultCodeRegionBuilder } from "../entity/CodeRegion";
 import { BeginEntity, TemplateEntity } from "../entity/TemplateEntity";
 import { TemplateConfig } from "../config/TemplateConfig";
@@ -32,12 +29,14 @@ class CodeRegionResolver implements IResolver {
             if (textLine.isEmptyOrWhitespace) {
                 continue;
             }
-            if (textLine.text.indexOf(template.beginFlag)) {
+            if (textLine.text.indexOf(template.beginFlag) !== -1) {
                 // 匹配到开始标志 直接去解析模板开始信息配置, 目前配置只能在一行，并且为json格式
-                let codeRegion = DefaultCodeRegionBuilder.newInstance(textLine);
+                let codeRegion = DefaultCodeRegionBuilder.newInstance(doc, textLine);
                 regions.push(codeRegion);
             }
         }
         return regions;
     }
 }
+
+export { CodeRegionResolver };
