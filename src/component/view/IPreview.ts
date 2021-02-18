@@ -12,6 +12,9 @@ interface IPreview {
     getCodeStyle(prop: PreviewProperty): string;
 }
 
+// truly speaking, i don't wanna u do more things in subclass to implement IPreview interface.
+// so i code this abstract class for common html style codes generation.
+// if u really wanna customize html codes, u'd better overwrite these two methods.
 abstract class BasePreview implements IPreview {
     /**
      * 获取代码块格式
@@ -26,8 +29,8 @@ abstract class BasePreview implements IPreview {
         prop.codes.forEach((item, index) => {
             codeTemplate += `
                 <p>代码块${index + 1}:</p>
-                <pre>
-                    <code class="${prop.classes}">
+                <pre class="${prop.classes}">
+                    <code >
                     ${item}
                     </code>
                 </pre>

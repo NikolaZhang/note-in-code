@@ -38,7 +38,7 @@ class DefaultPreviewPropertyBuilder {
      * @param codeType 代码类型 一般是文件后缀 需要指定为LANGUAGE_DICT支持的格式
      */
     private static getLanguageClass(codeType: string): string {
-        return LANGUAGE_DICT[codeType] || "";
+        return LANGUAGE_DICT[codeType] || "language-none";
     }
 }
 
