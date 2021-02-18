@@ -1,0 +1,8 @@
+{
+    "note in code flag comment": {
+        "prefix": "nic",
+        "body": [
+            "// nic {\"title\": \"\", \"type\": \"java\", \"tag\": [], \"codeBegin\": 0, \"codeEnd\": 0, \"methods\": []}"
+        ]
+    }
+}

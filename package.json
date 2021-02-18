@@ -17,6 +17,12 @@
     ],
     "main": "./out/extension.js",
     "contributes": {
+        "snippets": [
+            {
+                "language": "java",
+                "path": "./snippets/common.json"
+            }
+        ],
         "commands": [
             {
                 "command": "nic.view",

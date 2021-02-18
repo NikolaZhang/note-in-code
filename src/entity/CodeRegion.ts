@@ -22,7 +22,22 @@ class DefaultCodeRegionBuilder {
      * @param textLine 当前行信息
      */
     private static decodeBeginEntity(textLine: TextLine): BeginEntity {
-        // todo zx 当配置出现多行的时候需要考虑到解析方法 使用json方式进行配置并不好 如果配置较多代码一般比较喜欢换行因此至少需要考虑换行情况
+        // better zx 基于json的配置解析, 注意json只能在一行之中, 如果风格化插件导致json换行会出现json格式错误
+        // todo zx 以区域注释的方式进行解析 并且支持markdown方式
+        // 出现多行的配置需要使用[]进行区域标识
+        // 支持属性配置
+        // 如果指定methods则取获取指定的方法, 否则获取下面注释的代码
+        /**
+         * nic
+         * title=xxx tag=xxx,xxx type=xxx
+         * note=[
+         *   ## xxxxxxx
+         *   ### xxxxxxx
+         *     - xxxxxxx
+         *     - xxxxxx
+         * ]
+         * methods=xxx,xxx
+         */
         let start = textLine.text.indexOf("{");
         let end = textLine.text.lastIndexOf("}");
         let config = textLine.text.substring(start, end + 1);

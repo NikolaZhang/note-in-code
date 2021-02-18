@@ -14,7 +14,7 @@ interface IPreview {
 
 // truly speaking, i don't wanna u do more things in subclass to implement IPreview interface.
 // so i code this abstract class for common html style codes generation.
-// if u really wanna customize html codes, u'd better overwrite these two methods.
+// if u really wanna customize html codes, u'd better overwrite these two methods, directly.
 abstract class BasePreview implements IPreview {
     /**
      * 获取代码块格式
@@ -40,7 +40,9 @@ abstract class BasePreview implements IPreview {
     }
 
     /**
-     * 加载web 网页程序
+     * 加载web 网页程序, 
+     * web网页程序我们使用原始的html, js, css等原始文件格式(文件在根目录resources目录下)
+     * 因此需要遵循vscode文件协议加载这些文件.
      * 参考代码 https://www.cnblogs.com/liuxianan/p/vscode-plugin-webview.html
      * @param context 上下文
      * @param templatePath 模板路径
