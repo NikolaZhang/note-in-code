@@ -12,7 +12,7 @@ class DefaultCodeRegionBuilder {
     static newInstance(doc: TextDocument, textLine: TextLine): CodeRegion {
         let codeRegion = new CodeRegion();
         codeRegion.sourceLine = textLine;
-        codeRegion.begin = DefaultCodeRegionBuilder.decodeBeginEntity(textLine);
+        codeRegion.begin = DefaultCodeRegionBuilder.decodeBeginEntity(textLine, doc);
         codeRegion.contents = DefaultCodeRegionBuilder.decodeContents(codeRegion.begin, textLine, doc);
         return codeRegion;
     }
@@ -21,8 +21,9 @@ class DefaultCodeRegionBuilder {
      * 解析textLine中的配置
      * @param textLine 当前行信息
      */
-    private static decodeBeginEntity(textLine: TextLine): BeginEntity {
-        // better zx 基于json的配置解析, 注意json只能在一行之中, 如果风格化插件导致json换行会出现json格式错误
+    private static decodeBeginEntity(textLine: TextLine, doc: TextDocument): BeginEntity {
+        // 基于json的配置解析, 如果风格化插件导致json换行, 此处代码进行了兼容性处理. 
+        // 但是只是进行了json的校验而非对错误的json进行处理
         // todo zx 以区域注释的方式进行解析 并且支持markdown方式
         // 出现多行的配置需要使用[]进行区域标识
         // 支持属性配置
@@ -38,9 +39,43 @@ class DefaultCodeRegionBuilder {
          * ]
          * methods=xxx,xxx
          */
-        let start = textLine.text.indexOf("{");
-        let end = textLine.text.lastIndexOf("}");
-        let config = textLine.text.substring(start, end + 1);
+        let tempTextLine: TextLine;
+        // 推测使用的注释标记
+        const commentSymbol = textLine.text.substring(0, textLine.text.indexOf("nic")).trim();
+        let commentText = "";
+        for (let i = 0; ; i++) {
+            tempTextLine = doc.lineAt(textLine.lineNumber + i);
+            if (tempTextLine.isEmptyOrWhitespace) {
+                continue;
+            }
+            if (tempTextLine.text.trimLeft().startsWith(commentSymbol)) {
+                commentText += tempTextLine.text.replace(commentSymbol, "").trim();
+            } else {
+                break;
+            }
+        }
+        // 大括号计数 以此来确定json字符串的开始和结束位置
+        let curlyBracesCnt = 0;
+        let start = 0;
+        let end = 0;
+        for (let i = 0; i < commentText.length; i++) {
+            if (commentText.charAt(i) === "{") {
+                start = i;
+                curlyBracesCnt++;
+            }
+            if (commentText.charAt(i) === "}") {
+                curlyBracesCnt--;
+                if (curlyBracesCnt === 0) {
+                    end = i;
+                    break;
+                }
+            }
+        }
+        console.debug("注释文本为", commentText);
+        if (curlyBracesCnt !== 0) {
+            throw new Error("json配置格式错误!");
+        }
+        let config = commentText.substring(start, end + 1);
         let beginInfo = new BeginEntity();
         if (config) {
             convertJson(config, beginInfo);

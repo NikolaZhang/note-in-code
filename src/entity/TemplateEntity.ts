@@ -60,6 +60,8 @@ class BeginEntity {
 
     /** 是否展示行号 */
     lineNumber: boolean = true;
+    /** 强制对齐, 当代码中每行出现空格 是否将相同长度的空格去除 */
+    forceTrim: boolean = false;
 }
 
 export { TemplateEntity, BeginEntity, DEFAULT_MAX_SCAN_LINE };

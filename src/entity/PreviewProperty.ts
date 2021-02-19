@@ -1,3 +1,4 @@
+import { formatPrefix } from "../util/StringUtils";
 import { CodeRegion } from "./CodeRegion";
 
 class PreviewProperty {
@@ -28,6 +29,13 @@ class DefaultPreviewPropertyBuilder {
         property.classes += " " + DefaultPreviewPropertyBuilder.getLanguageClass(codeRegion.begin.type);
         if (!codeRegion.begin.lineNumber || codeRegion.begin.lineNumber) {
             property.classes += " line-numbers";
+        }
+        if (codeRegion.begin.forceTrim) {
+            // 当代码块中出现同等前缀的空格比较影响展示效果(相同前缀的空格没有什么意义)
+            // formatPrefix方法提供前缀移除功能
+            codeRegion.contents.forEach((item, index) => {
+                codeRegion.contents[index] = formatPrefix(item);
+            });
         }
         property.codes = codeRegion.contents;
         return property;

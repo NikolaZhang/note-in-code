@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <meta name="robots" content="noindex, follow" />
+        <meta name="description" content="" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+        <title>note in code view</title>
+        <link rel="stylesheet" href="../css/prism.css" />
+    </head>
+    <body>
+        <h1>note in code</h1>
+        <h2>this is code demo</h2>
+        <div>
+            <p>局部行高亮, java语言高亮, 行号显示</p>
+            <pre data-line="2-4" class="language-java line-numbers">
+                <code>
+                    public static void main(String[] args) {
+                        System.out.println("hello world");
+                    }
+                </code>
+            </pre>
+            <pre class="language-none">
+                <code>
+                    This raw text
+                    is not highlighted
+                    but it still has
+                    line numbers
+                </code>
+            </pre>
+        </div>
+        <hr />
+        <div><p>代码块1:</p>
+                <pre class=" language-java line-numbers">
+                    <code>
+                    public static void main(String[] args) {
+
+    }
+                    </code>
+                </pre>
+            <p>代码块1:</p>
+                <pre class=" language-java line-numbers">
+<code>
+public void test1() {
+        // this code region is for test.
+    }
+                    </code>
+                </pre>
+            <p>代码块1:</p>
+                <pre class=" language-java line-numbers">
+<code>
+public void test2() {
+}
+
+public void test3() {
+}
+</code>
+                </pre>
+            </div>
+        <script src="../js/prism.js"></script>
+    </body>
+</html>

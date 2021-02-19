@@ -21,26 +21,22 @@ abstract class BasePreview implements IPreview {
      * @param prop 需要传给代码块的属性配置
      */
     getCodeStyle(prop: PreviewProperty): string {
-        // todo zx 代码出现缩进问题
         if (!prop.codes || prop.codes.length === 0) {
             return "";
         }
         let codeTemplate = "";
+        // <pre>与<code> 之前不要出现空格否则代码无法对齐
         prop.codes.forEach((item, index) => {
             codeTemplate += `
-                <p>代码块${index + 1}:</p>
-                <pre class="${prop.classes}">
-                    <code >
-                    ${item}
-                    </code>
-                </pre>
+            <p>代码块${index + 1}:</p>
+            <pre class="${prop.classes}"><code>${item}</code></pre>
             `;
         });
         return codeTemplate;
     }
 
     /**
-     * 加载web 网页程序, 
+     * 加载web 网页程序,
      * web网页程序我们使用原始的html, js, css等原始文件格式(文件在根目录resources目录下)
      * 因此需要遵循vscode文件协议加载这些文件.
      * 参考代码 https://www.cnblogs.com/liuxianan/p/vscode-plugin-webview.html

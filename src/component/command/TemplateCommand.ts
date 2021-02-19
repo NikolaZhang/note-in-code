@@ -26,7 +26,7 @@ export class TemplateCommand extends BaseNoteCommand implements IMakeComponent {
         this.template.key = "cm";
         this.template.description = "this is used for multiple lines";
         this.template.type = "java";
-        this.template.beginFlag = "// nic";
+        this.template.beginFlag = "nic";
         this.init();
     }
 
