@@ -22,8 +22,8 @@ class DefaultCodeRegionBuilder {
      * @param textLine 当前行信息
      */
     private static decodeBeginEntity(textLine: TextLine, doc: TextDocument): BeginEntity {
-        // 基于json的配置解析, 如果风格化插件导致json换行, 此处代码进行了兼容性处理. 
-        // 但是只是进行了json的校验而非对错误的json进行处理
+        // 基于json的配置解析, 如果风格化插件导致json换行, 此处代码进行了兼容性处理.
+        // 但是只是进行了json的校验而非对错误的json进行处理.
         // todo zx 以区域注释的方式进行解析 并且支持markdown方式
         // 出现多行的配置需要使用[]进行区域标识
         // 支持属性配置
@@ -41,7 +41,11 @@ class DefaultCodeRegionBuilder {
          */
         let tempTextLine: TextLine;
         // 推测使用的注释标记
+        // better zx 配置话读取nic 错误提示
         const commentSymbol = textLine.text.substring(0, textLine.text.indexOf("nic")).trim();
+        if (!commentSymbol) {
+            throw new Error("nic前缺少注释符号");
+        }
         let commentText = "";
         for (let i = 0; ; i++) {
             tempTextLine = doc.lineAt(textLine.lineNumber + i);
@@ -54,7 +58,7 @@ class DefaultCodeRegionBuilder {
                 break;
             }
         }
-        // 大括号计数 以此来确定json字符串的开始和结束位置
+        // 大括号计数 以此来确定json字符串的开始start和结束end位置
         let curlyBracesCnt = 0;
         let start = 0;
         let end = 0;
