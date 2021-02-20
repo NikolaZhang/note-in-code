@@ -22,10 +22,19 @@ function format(template: string, ...args: any): string {
     return formatWithMark(null, template, args);
 }
 
-function formatPrefix(multiLine: string) : string{
-    let lines = multiLine.split(/[\r\n]/);
+/**
+ * 移除文本中出现的相同空前缀
+ * @param multiLine 含有多行的文本
+ * @param symbol 换行符标记
+ */
+function formatPrefix(multiLine: string, symbol: string = "\n"): string{
+    let lines = multiLine.split(symbol);
     let minSpaceCount = Number.MAX_VALUE;
     lines.forEach((item) => {
+        // 对于空行直接跳过不进行处理 否则tempSpaceCount为0就无法移除前缀了
+        if (item.length === 0) { 
+            return;
+        }
         let tempSpaceCount = 0;
         // 对于既有空格又有\t的缩进, 还是先进行代码的格式化吧 (●'◡'●)
         for (let i = 0; i < item.length; i++) {
@@ -53,7 +62,7 @@ function formatPrefix(multiLine: string) : string{
             lines[index] = item.replace(space, "");
         }
     });
-    return lines.join("\n");
+    return lines.join(symbol);
 }
 
 export { formatWithMark, format, formatPrefix };

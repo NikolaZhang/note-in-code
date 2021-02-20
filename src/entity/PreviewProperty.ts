@@ -1,5 +1,6 @@
 import { formatPrefix } from "../util/StringUtils";
 import { CodeRegion } from "./CodeRegion";
+import * as vscode from "vscode";
 
 class PreviewProperty {
     /** 由于使用的是prismjs 为了容易扩展，我们需要动态提供class 除非是固定的语言固定的格式 */
@@ -26,15 +27,19 @@ const LANGUAGE_DICT: { [k: string]: string } = {
 class DefaultPreviewPropertyBuilder {
     static newInstance(codeRegion: CodeRegion): PreviewProperty {
         let property = new PreviewProperty();
-        property.classes += " " + DefaultPreviewPropertyBuilder.getLanguageClass(codeRegion.begin.type);
+        property.classes += " " + this.getLanguageClass(codeRegion.begin.type);
         if (!codeRegion.begin.lineNumber || codeRegion.begin.lineNumber) {
             property.classes += " line-numbers";
         }
         if (codeRegion.begin.forceTrim) {
             // 当代码块中出现同等前缀的空格比较影响展示效果(相同前缀的空格没有什么意义)
             // formatPrefix方法提供前缀移除功能
+            let symbol = "\n";
+            if (vscode.window.activeTextEditor.document.eol === vscode.EndOfLine.CRLF) {
+                symbol = "\r\n";
+            }
             codeRegion.contents.forEach((item, index) => {
-                codeRegion.contents[index] = formatPrefix(item);
+                codeRegion.contents[index] = formatPrefix(item, symbol);
             });
         }
         property.codes = codeRegion.contents;
