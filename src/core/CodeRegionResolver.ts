@@ -1,8 +1,9 @@
 import * as vscode from "vscode";
 import { NIC_TEMPLATE, TemplateCommand } from "../component/command/TemplateCommand";
-import { CodeRegion, DefaultCodeRegionBuilder } from "../entity/CodeRegion";
+import { CodeRegion } from "../entity/CodeRegion";
 import { BeginEntity, TemplateEntity } from "../entity/TemplateEntity";
 import { TemplateConfig } from "../config/TemplateConfig";
+import { DefaultCodeRegionBuilder } from "../entity/builder/DefaultCodeRegionBuilder";
 
 /**
  * 模板解析类

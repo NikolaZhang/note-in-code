@@ -25,6 +25,11 @@ abstract class BasePreview implements IPreview {
             return "";
         }
         let codeTemplate = "";
+        if (prop.note) {
+            codeTemplate += `
+            <pre class="language-md"><code>${prop.note}</code></pre>
+            `;
+        }
         // <pre>与<code> 之前不要出现空格否则代码无法对齐
         prop.codes.forEach((item, index) => {
             codeTemplate += `

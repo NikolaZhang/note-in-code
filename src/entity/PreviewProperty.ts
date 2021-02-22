@@ -7,6 +7,8 @@ class PreviewProperty {
     classes: string = "";
     /** 代码块 */
     codes: Array<string> = [];
+    /** markdown 文檔區域 */
+    note: string = "";
 }
 
 // 此处的参数配置必须参照 https://prismjs.com/#supported-languages
@@ -43,6 +45,7 @@ class DefaultPreviewPropertyBuilder {
             });
         }
         property.codes = codeRegion.contents;
+        property.note = codeRegion.note;
         return property;
     }
 
