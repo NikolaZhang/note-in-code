@@ -33,12 +33,12 @@ class FilePreview extends BasePreview implements IMakeComponent {
 
             // 3. 设置网页内容
             let webContent = this.getWebViewContent(context, "resources/html/CodeViewPanel.html", slot);
-            console.log("生成网页内容为: ", webContent);
             panel.webview.html = webContent;
 
             panel.onDidDispose(
-                () => {
+                (e) => {
                     // 当面板关闭时，取消webview内容之后的更新
+                    console.log("关闭", e);
                 },
                 null,
                 context.subscriptions

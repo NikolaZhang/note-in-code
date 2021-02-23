@@ -58,7 +58,6 @@ abstract class BasePreview implements IPreview {
             return $1 + vscode.Uri.file(path.resolve(dirPath, $2)).with({ scheme: "vscode-resource" }).toString() + '"';
         });
         // 对定制化参数进行处理 一些页面需要展示的动态数据, 我们使用占位符写入页面, 以下程序直接替换这些占位符
-        // better zx 当然占位符过多对性能的负影响就会翻倍
         html = html.replace("${slot}", slot);
         return html;
     }

@@ -38,7 +38,7 @@ class TemplateEntity extends Common implements ICheck {
  * 注意按照代码区块扫描, 如果方法没有结束则最多扫到方法结束位置
  * 如果代码行数为400则会扫描400行
  */
-const DEFAULT_MAX_SCAN_LINE = 200;
+const DEFAULT_MAX_SCAN_LINE = 10;
 
 class BeginEntity {
     /** 代码注释的标题 */
